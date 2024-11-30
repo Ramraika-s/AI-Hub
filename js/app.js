@@ -1,106 +1,110 @@
-// Initialize Firebase
-import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, collection, addDoc } from 'firebase/firestore';
-import { getAnalytics } from 'firebase/analytics';
-import { HfInference } from '@huggingface/inference';
+document.addEventListener('DOMContentLoaded', function () {
+  // Elements
+  const inputField = document.getElementById('user-input');
+  const outputField = document.getElementById('model-output');
+  const modelButtons = document.querySelectorAll('.model-button');
+  const form = document.getElementById('data-form');
 
-// Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyCl7PnoVlHFWdPJqLDdIYxXCXGAk8plDxI", // Use your Firebase API key
-  authDomain: 'aihub-services.firebaseapp.com',
-  projectId: 'aihub-services',
-  storageBucket: 'aihub-services.appspot.com',
-  messagingSenderId: '544621705118',
-  appId: "1:544621705118:web:9a3d02ed2a2c632a37bc68",
-  measurementId: 'G-JPZTWM3MTP'
-};
+  // Hugging Face API configuration
+  const HUGGING_FACE_API_KEY = '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';  // Hugging Face API Key
+  const API_URL = 'https://api-inference.huggingface.co/models/';  // Hugging Face API URL
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const analytics = getAnalytics(app);
+  // Firebase configuration (already initialized elsewhere in your project)
+  // For example:
+  // firebase.initializeApp(firebaseConfig);
 
-// Hugging Face API Setup
-const hf = new HfInference("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");
+  // Model selection - Trigger model call on button click
+  modelButtons.forEach(button => {
+      button.addEventListener('click', function () {
+          const modelName = button.innerText.trim();
+          if (inputField.value.trim() !== '') {
+              callHuggingFaceAPI(modelName, inputField.value);
+          } else {
+              outputField.innerText = 'Enter a text before selecting a model.';
+          }
+      });
+  });
 
-// Authentication and Firestore Setup
-const registerUser = async (email, password) => {
-  try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    console.log('User Registered:', userCredential.user);
-  } catch (error) {
-    console.error('Error registering user:', error);
+  // Function to call Hugging Face API and get output from the selected model
+  async function callHuggingFaceAPI(modelName, inputText) {
+      const endpoint = '${API_URL}${modelName}';
+      const headers = {
+          'Authorization': 'Bearer ${HUGGING_FACE_API_KEY}',
+          'Content-Type': 'application/json'
+      };
+      const body = JSON.stringify({ inputs: inputText });
+
+      try {
+          outputField.innerText = 'Processing... Please wait.';
+
+          const response = await fetch(endpoint, {
+              method: 'POST',
+              headers: headers,
+              body: body
+          });
+
+          const data = await response.json();
+          if (response.ok) {
+              outputField.innerText = data.generated_text || 'No output from model.';
+          } else {
+              outputField.innerText = "Error: ${data.error.message || 'Unknown error occurred.'}";
+          }
+      } catch (error) {
+          console.error('Error:', error);
+          outputField.innerText = 'Network error: ${error.message}';
+      }
   }
-};
 
-const loginUser = async (email, password) => {
-  try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    console.log('User Logged In:', userCredential.user);
-  } catch (error) {
-    console.error('Error logging in user:', error);
+  // Event to clear output field while typing
+  function clearOutput() {
+      outputField.innerText = '';
   }
-};
 
-// Hugging Face Inference Function Example
-const getTextGeneration = async (text) => {
-  try {
-    const output = await hf.textGeneration({
-      model: 'gpt2',  // Example model, change as per selection
-      inputs: text,
-    });
-    console.log('Generated Text:', output.generated_text);
-    return output.generated_text;
-  } catch (error) {
-    console.error('Error with text generation:', error);
-  }
-};
+  inputField.addEventListener('input', clearOutput);
 
-// Handling User Authentication State
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    console.log('User is signed in:', user);
-  } else {
-    console.log('No user signed in');
+  // Form submission to save input data
+  if (form) {
+      form.addEventListener('submit', function (event) {
+          event.preventDefault();
+          const userInput = inputField.value.trim();
+          if (userInput) {
+              saveUserInput(userInput);
+          } else {
+              alert('Please enter some text before submitting.');
+          }
+      });
   }
+
+  // Save user input to Firebase Firestore (expand if needed)
+  function saveUserInput(input) {
+      // Initialize Firebase (Firebase configuration)
+      const firebaseConfig = {
+          apiKey: "AIzaSyCl7PnoVlHFWdPJqLDdIYxXCXGAk8plDxI",
+          authDomain: "aihub-services.firebaseapp.com",
+          projectId: "aihub-services",
+          storageBucket: "aihub-services.appspot.com",
+          messagingSenderId: "544621705118",
+          appId: "1:544621705118:web:56c9fe6e29acb54271e8fb",
+          measurementId: "G-JPZTWM3MTP"
+      };
+
+      if (!firebase.apps.length) {
+          firebase.initializeApp(firebaseConfig);
+      } else {
+          firebase.app(); // If already initialized, use that one
+      }
+
+      const db = firebase.firestore();
+      db.collection("user_inputs")
+          .add({
+              input: input,
+              timestamp: firebase.firestore.FieldValue.serverTimestamp()
+          })
+          .then(() => {
+              console.log('User input saved successfully!');
+          })
+          .catch((error) => {
+              console.error('Error saving user input: ', error);
+          });
+    }
 });
-
-// Example of storing data in Firestore (User feedback, queries, etc.)
-const storeUserData = async (userData) => {
-  try {
-    await addDoc(collection(db, 'userQueries'), {
-      name: userData.name,
-      query: userData.query,
-      timestamp: new Date(),
-    });
-    console.log('User data stored');
-  } catch (error) {
-    console.error('Error storing user data:', error);
-  }
-};
-
-// Initialize functions and connect UI
-document.getElementById('register-btn').addEventListener('click', () => {
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  registerUser(email, password);
-});
-
-document.getElementById('login-btn').addEventListener('click', () => {
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  loginUser(email, password);
-});
-
-document.getElementById('generate-btn').addEventListener('click', async () => {
-  const inputText = document.getElementById('input-text').value;
-  const result = await getTextGeneration(inputText);
-  document.getElementById('generated-text').innerText = result;
-});
-
-// Google Analytics Event Tracking
-const trackEvent = (eventName, eventParams) => {
-  analytics.logEvent(eventName, eventParams);
-};

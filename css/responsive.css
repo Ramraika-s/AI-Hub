@@ -1,0 +1,44 @@
+/* Responsive Styles for Mobile Devices */
+
+/* Category Section */
+.category-section {
+    grid-template-columns: 1fr; /* Single column on mobile */
+}
+
+.category-box {
+    padding: 15px;
+    margin: 10px 0;
+}
+
+.category-box h2 {
+    font-size: 1.2rem; /* Adjust font size for mobile */
+}
+
+.model-selection {
+    flex-direction: column; /* Stack the model cards on top of each other */
+}
+
+.model-card {
+    margin-bottom: 10px;
+    width: 100%; /* Ensure the model cards take up full width */
+}
+
+/* Model Container */
+.model-container {
+    display: block; /* Allow model containers to be visible on mobile */
+}
+
+/* Navigation */
+nav ul {
+    flex-direction: column; /* Stack navigation items on top of each other */
+    align-items: center;
+}
+
+nav ul li {
+    margin-left: 0;
+    margin-bottom: 15px; /* Add space between nav items */
+}
+
+nav ul li a {
+    font-size: 1rem; /* Adjust font size for mobile */
+}

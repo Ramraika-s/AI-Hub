@@ -9,7 +9,6 @@ on:
       - main  # Run tests and checks for PRs
 
 jobs:
-  # Step 1: Code Quality Checks
   lint-code:
     name: Lint Code
     runs-on: ubuntu-latest
@@ -25,16 +24,18 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Log the directory structure (for debugging)
+        run: ls -al
+
       - name: Lint JavaScript
-        run: npx eslint "/*.js"
+        run: npx eslint "**/*.js"
 
       - name: Lint CSS
-        run: npx stylelint "/*.css"
+        run: npx stylelint "**/*.css"
 
       - name: Lint HTML
-        run: npx htmlhint "/*.html"
+        run: npx htmlhint "**/*.html"
 
-  # Step 2: Secret Key and API Check
   check-secrets:
     name: Check for Exposed Secrets
     runs-on: ubuntu-latest
@@ -47,7 +48,6 @@ jobs:
         with:
           file-path: ./
 
-  # Step 3: Dependency Vulnerability Audit
   audit-dependencies:
     name: Audit Dependencies
     runs-on: ubuntu-latest
@@ -66,7 +66,6 @@ jobs:
       - name: Audit dependencies for vulnerabilities
         run: npm audit --production
 
-  # Step 4: Lighthouse Performance Audit
   lighthouse-audit:
     name: Run Lighthouse Audit
     runs-on: ubuntu-latest
@@ -83,10 +82,8 @@ jobs:
         run: npm install -g @lhci/cli
 
       - name: Run Lighthouse Audit
-        run: |
-          lhci autorun --collect.staticDistDir=./dist
+        run: lhci autorun --collect.staticDistDir=./dist  # Ensure this matches your build output directory
 
-  # Step 5: Build and Deploy
   build-deploy:
     name: Build and Deploy
     runs-on: ubuntu-latest
@@ -104,7 +101,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('/package-lock.json') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
@@ -120,7 +117,6 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist  # Replace with your build output directory
 
-  # Step 6: Deployment Notifications
   notify:
     name: Deployment Notifications
     runs-on: ubuntu-latest
@@ -131,4 +127,4 @@ jobs:
         with:
           status: ${{ job.status }}
           message: "Deployment ${{ job.status }} for ${{ github.repository }}"
-          url: "https://github.com/${{ github.repository }}/actions"
+          url: "https://github.com/${{ github.repository }}/actions"

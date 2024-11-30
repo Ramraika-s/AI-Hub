@@ -1,5 +1,13 @@
 {
   "dependencies": {
     "firebase": "^11.0.2"
+  },
+  "devDependencies": {
+    "eslint": "^9.16.0",
+    "glob": "^11.0.0",
+    "htmlhint": "^1.1.4",
+    "inflight": "^1.0.6",
+    "rimraf": "^6.0.1",
+    "stylelint": "^16.11.0"
   }
 }

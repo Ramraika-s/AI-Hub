@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Hub</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="assets/icons/favicon.ico" type="image/x-icon">
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@huggingface/inference"></script>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <h1>AI Hub</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="category-section">
+            <div class="category-box">
+                <h2>Text Generation</h2>
+                <div class="model-selection">
+                    <div class="model-card" onclick="openModel('gpt2')">
+                        <div class="model-icon">GPT-2</div>
+                    </div>
+                    <div class="model-card" onclick="openModel('gpt-neo-2.7B')">
+                        <div class="model-icon">GPT-3</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category-box">
+                <h2>Sentiment Analysis</h2>
+                <div class="model-selection">
+                    <div class="model-card" onclick="openModel('distilbert-base-uncased-finetuned-sst-2-english')">
+                        <div class="model-icon">DistilBERT</div>
+                    </div>
+                    <div class="model-card" onclick="openModel('bert-base-uncased')">
+                        <div class="model-icon">BERT</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add more categories here in the same format -->
+        </section>
+
+        <section id="model-container" class="model-container">
+            <!-- Model interface will appear here -->
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 AI Hub. All Rights Reserved.</p>
+    </footer>
+
+    <script src="analytics.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="huggingface-api.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,22 +1,20 @@
-// src/components/Dashboard/Dashboard.js
+// src/App.js
 import React from 'react';
-import { auth } from '../../firebase/firebase';
-import { useHistory } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import Login from './components/Auth/Login';
+import Signup from './components/Auth/Signup';
+import Dashboard from './components/Dashboard/Dashboard';
 
-const Dashboard = () => {
-    const history = useHistory();
+function App() {
+  return (
+    <Router>
+      <Switch>
+        <Route path="/login" component={Login} />
+        <Route path="/signup" component={Signup} />
+        <Route path="/dashboard" component={Dashboard} />
+      </Switch>
+    </Router>
+  );
+}
 
-    const handleLogout = async () => {
-        await auth.signOut();
-        history.push('/login');
-    };
-
-    return (
-        <div className="dashboard-container">
-            <h2>Welcome to your Dashboard!</h2>
-            <button onClick={handleLogout}>Logout</button>
-        </div>
-    );
-};
-
-export default Dashboard;
+export default App;

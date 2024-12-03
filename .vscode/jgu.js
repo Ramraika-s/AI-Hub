@@ -1,44 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
+from transformers import AutoModel, AutoTokenizer
+from diffusers import StableDiffusionPipeline
 
-<head>
-    <!-- Required meta tags -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+# GPT-2
+print("Downloading GPT-2...")
+gpt2_model = AutoModel.from_pretrained("gpt2", cache_dir="./pretrained")
+gpt2_tokenizer = AutoTokenizer.from_pretrained("gpt2", cache_dir="./pretrained")
 
-    <!-- Title of the app -->
-    <title>IntelliBase - AI-Powered Assistant</title>
+# BERT
+print("Downloading BERT...")
+bert_model = AutoModel.from_pretrained("bert-base-uncased", cache_dir="./pretrained")
+bert_tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased", cache_dir="./pretrained")
 
-    <!-- Favicon -->
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+# T5-small
+print("Downloading T5-small...")
+t5_model = AutoModel.from_pretrained("t5-small", cache_dir="./pretrained")
+t5_tokenizer = AutoTokenizer.from_pretrained("t5-small", cache_dir="./pretrained")
 
-    <!-- Meta description (SEO) -->
-    <meta name="description" content="IntelliBase is an AI-powered assistant offering various AI models for different use cases like chat, content generation, and more.">
+# CLIP
+print("Downloading CLIP...")
+clip_model = AutoModel.from_pretrained("openai/clip-vit-base-patch32", cache_dir="./pretrained")
+clip_tokenizer = AutoTokenizer.from_pretrained("openai/clip-vit-base-patch32", cache_dir="./pretrained")
 
-    <!-- Open Graph meta tags for better social media preview -->
-    <meta property="og:title" content="IntelliBase - AI-Powered Assistant" />
-    <meta property="og:description" content="Get assistance from multiple AI models for your tasks with IntelliBase. Experience cutting-edge AI technology today." />
-    <meta property="og:image" content="%PUBLIC_URL%/logo.png" />
-    <meta property="og:url" content="https://intellibase.com" />
-    <meta property="og:type" content="website" />
+# Stable Diffusion
+print("Downloading Stable Diffusion...")
+stable_diffusion = StableDiffusionPipeline.from_pretrained(
+    "stabilityai/stable-diffusion-v1-4", cache_dir="./pretrained"
+)
 
-    <!-- Twitter card meta tags for better preview -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:creator" content="@your_twitter_handle" />
-
-    <!-- External font from Google Fonts (Roboto) -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
-
-    <!-- Link to external stylesheets (you may link your custom styles here) -->
-    <link rel="stylesheet" href="%PUBLIC_URL%/styles.css">
-</head>
-
-<body>
-    <!-- This is the root div where React will inject the app -->
-    <div id="root"></div>
-
-    <!-- Firebase and React scripts will be injected here during build -->
-</body>
-
-</html>
+print("All models downloaded successfully.")

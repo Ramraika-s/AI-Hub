@@ -1,18 +1,18 @@
-// src/components/Auth/Login.js
+// src/components/Auth/Signup.js
 import React, { useState } from 'react';
 import { auth } from '../../firebase/firebase';
 import { useHistory } from 'react-router-dom';
 
-const Login = () => {
+const Signup = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const history = useHistory();
 
-    const handleLogin = async (e) => {
+    const handleSignup = async (e) => {
         e.preventDefault();
         try {
-            await auth.signInWithEmailAndPassword(email, password);
+            await auth.createUserWithEmailAndPassword(email, password);
             history.push('/dashboard');
         } catch (err) {
             setError(err.message);
@@ -21,8 +21,8 @@ const Login = () => {
 
     return (
         <div className="auth-container">
-            <h2>Login</h2>
-            <form onSubmit={handleLogin}>
+            <h2>Sign Up</h2>
+            <form onSubmit={handleSignup}>
                 <input
                     type="email"
                     placeholder="Email"
@@ -38,10 +38,10 @@ const Login = () => {
                     required
                 />
                 {error && <p>{error}</p>}
-                <button type="submit">Login</button>
+                <button type="submit">Sign Up</button>
             </form>
         </div>
     );
 };
 
-export default Login;
+export default Signup;

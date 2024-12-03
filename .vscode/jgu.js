@@ -1,20 +1,47 @@
-// src/firebase/firebase.js
-import firebase from 'firebase/app';
-import 'firebase/auth';  // Import Firebase Authentication service
+// src/components/Auth/Login.js
+import React, { useState } from 'react';
+import { auth } from '../../firebase/firebase';
+import { useHistory } from 'react-router-dom';
 
-// Initialize Firebase with your config details from Firebase Console
-const firebaseConfig = {
-    apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
-    authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
-    storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.REACT_APP_FIREBASE_APP_ID,
-    measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
+const Login = () => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const history = useHistory();
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        try {
+            await auth.signInWithEmailAndPassword(email, password);
+            history.push('/dashboard');
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+
+    return (
+        <div className="auth-container">
+            <h2>Login</h2>
+            <form onSubmit={handleLogin}>
+                <input
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                />
+                <input
+                    type="password"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                />
+                {error && <p>{error}</p>}
+                <button type="submit">Login</button>
+            </form>
+        </div>
+    );
 };
 
-const firebaseApp = firebase.initializeApp(firebaseConfig);
-
-const auth = firebaseApp.auth();
-
-export { auth };
+export default Login;
